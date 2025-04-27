@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     // Create the virtual environment
-                    sh 'python3 -m venv ${VENV}'
+                    powershell 'python3 -m venv ${VENV}'
                     
                     // Set platform-specific activation commands
                     def activateEnv = ''
@@ -28,7 +28,7 @@ pipeline {
                     }
 
                     // Install dependencies
-                    sh """
+                    powershell """
                         ${activateEnv}
                         pip install --upgrade pip
                         pip install -r requirements.txt
