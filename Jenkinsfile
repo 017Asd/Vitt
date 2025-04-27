@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Clone your GitHub or Git repo
-                git credentialsId: 'your-credential-id', url: 'https://github.com/your-username/your-repo.git', branch: 'main'
+                git credentialsId: 'github-credentials', url: 'https://github.com/011111111111111/Projectdev.git', branch: 'main'
             }
         }
 
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh '''
                 source ${VENV}/bin/activate
-                python validate_model.py
+                python model_infer.py
                 '''
             }
         }
