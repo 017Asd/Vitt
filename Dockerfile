@@ -1,26 +1,17 @@
-# Use a Python base image
+# Use an official Python base image
 FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies (required for transformers and Pillow)
-RUN apt-get update && apt-get install -y \
-    git \
-    gcc \
-    g++ \
-    libgl1-mesa-glx \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first to leverage Docker caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the code
+# Copy files into the container
 COPY . .
 
-# Expose port 5000 for Flask
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Expose port 5000
 EXPOSE 5000
 
-# Run the Flask app
-CMD ["python", "app.py"]
+# Run the app
+CMD ["python", "app/app.py"]

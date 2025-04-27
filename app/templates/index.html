@@ -1,14 +1,78 @@
-<!-- app/templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Image Classifier</title>
+    <style>
+        body {
+            background: #0f2027;  /* fallback for old browsers */
+            background: linear-gradient(to right, #2c5364, #203a43, #0f2027); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: #00d2ff;
+        }
+
+        form {
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #2a2a2a;
+            color: white;
+            border: none;
+        }
+
+        button {
+            background-color: #00d2ff;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #007acc;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 1.8rem;
+            color: #a0e9ff;
+        }
+
+        img {
+            margin-top: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+    </style>
 </head>
 <body>
     <h1>Upload Image</h1>
     <form method="POST" enctype="multipart/form-data">
         <input type="file" name="file" required>
+        <br>
         <button type="submit">Predict</button>
     </form>
 
