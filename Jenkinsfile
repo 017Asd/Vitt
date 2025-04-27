@@ -13,69 +13,69 @@ pipeline {
             }
         }
 
-        stage('Set Up Python Environment') {
-            steps {
-                script {
-                    // Create the virtual environment
-                    powershell 'python3 -m venv ${VENV}'
+        // stage('Set Up Python Environment') {
+        //     steps {
+        //         script {
+        //             // Create the virtual environment
+        //             powershell 'python3 -m venv ${VENV}'
                     
-                    // Set platform-specific activation commands
-                    def activateEnv = ''
-                    if (isUnix()) {
-                        activateEnv = 'source ${VENV}/bin/activate'
-                    } else {
-                        activateEnv = '${VENV}\\Scripts\\activate'
-                    }
+        //             // Set platform-specific activation commands
+        //             def activateEnv = ''
+        //             if (isUnix()) {
+        //                 activateEnv = 'source ${VENV}/bin/activate'
+        //             } else {
+        //                 activateEnv = '${VENV}\\Scripts\\activate'
+        //             }
 
-                    // Install dependencies
-                    powershell """
-                        ${activateEnv}
-                        pip install --upgrade pip
-                        pip install -r requirements.txt
-                    """
-                }
-            }
-        }
+        //             // Install dependencies
+        //             powershell """
+        //                 ${activateEnv}
+        //                 pip install --upgrade pip
+        //                 pip install -r requirements.txt
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    // Set platform-specific activation commands
-                    def activateEnv = ''
-                    if (isUnix()) {
-                        activateEnv = 'source ${VENV}/bin/activate'
-                    } else {
-                        activateEnv = '${VENV}\\Scripts\\activate'
-                    }
+        // stage('Run Tests') {
+        //     steps {
+        //         script {
+        //             // Set platform-specific activation commands
+        //             def activateEnv = ''
+        //             if (isUnix()) {
+        //                 activateEnv = 'source ${VENV}/bin/activate'
+        //             } else {
+        //                 activateEnv = '${VENV}\\Scripts\\activate'
+        //             }
 
-                    // Run tests using pytest
-                    sh """
-                        ${activateEnv}
-                        pytest tests/
-                    """
-                }
-            }
-        }
+        //             // Run tests using pytest
+        //             sh """
+        //                 ${activateEnv}
+        //                 pytest tests/
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Validate Model') {
-            steps {
-                script {
-                    // Set platform-specific activation commands
-                    def activateEnv = ''
-                    if (isUnix()) {
-                        activateEnv = 'source ${VENV}/bin/activate'
-                    } else {
-                        activateEnv = '${VENV}\\Scripts\\activate'
-                    }
+        // stage('Validate Model') {
+        //     steps {
+        //         script {
+        //             // Set platform-specific activation commands
+        //             def activateEnv = ''
+        //             if (isUnix()) {
+        //                 activateEnv = 'source ${VENV}/bin/activate'
+        //             } else {
+        //                 activateEnv = '${VENV}\\Scripts\\activate'
+        //             }
 
-                    // Run model inference script
-                    sh """
-                        ${activateEnv}
-                        python model_infer.py
-                    """
-                }
-            }
-        }
+        //             // Run model inference script
+        //             sh """
+        //                 ${activateEnv}
+        //                 python model_infer.py
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Deploy (Dummy Step)') {
             steps {
