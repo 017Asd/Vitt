@@ -37,25 +37,25 @@ pipeline {
         //     }
         // }
 
-        // stage('Run Tests') {
-        //     steps {
-        //         script {
-        //             // Set platform-specific activation commands
-        //             def activateEnv = ''
-        //             if (isUnix()) {
-        //                 activateEnv = 'source ${VENV}/bin/activate'
-        //             } else {
-        //                 activateEnv = '${VENV}\\Scripts\\activate'
-        //             }
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Set platform-specific activation commands
+                    def activateEnv = ''
+                    if (isUnix()) {
+                        activateEnv = 'source ${VENV}/bin/activate'
+                    } else {
+                        activateEnv = '${VENV}\\Scripts\\activate'
+                    }
 
-        //             // Run tests using pytest
-        //             sh """
-        //                 ${activateEnv}
-        //                 pytest tests/
-        //             """
-        //         }
-        //     }
-        // }
+                    // Run tests using pytest
+                    sh """
+                        ${activateEnv}
+                        pytest tests/
+                    """
+                }
+            }
+        }
 
         // stage('Validate Model') {
         //     steps {
