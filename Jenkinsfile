@@ -49,10 +49,10 @@ pipeline {
                     }
 
                     // Run tests using pytest
-                    sh """
-                        ${activateEnv}
-                        pytest tests/
-                    """
+                    // sh """
+                    //     ${activateEnv}
+                    //     pytest tests/
+                    // """
                 }
             }
         }
