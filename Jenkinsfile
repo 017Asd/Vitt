@@ -77,7 +77,7 @@ pipeline {
         //     }
         // }
 
-        stage('Deploy (Dummy Step)') {
+        stage('Deploy') {
             steps {
                 echo "Deployment would happen here!"
                 // Replace with real commands later like docker push, aws s3 cp, etc.
