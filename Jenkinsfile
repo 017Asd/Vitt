@@ -6,6 +6,7 @@ pipeline {
         DOCKER_TAG = "${env.BUILD_NUMBER}"
         HF_TOKEN = credentials('hf-token')
         PORT = '5000'
+        DOCKER_REGISTRY = credentials('docker-hub-credentials')
     }
 
     stages {
@@ -31,6 +32,30 @@ pipeline {
             }
         }
 
+        stage('Push to Registry') {
+            steps {
+                script {
+                    echo "Pushing Docker image to registry..."
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Login to Docker Hub
+                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                        
+                        // Tag the image for Docker Hub
+                        bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} %DOCKER_USERNAME%/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} %DOCKER_USERNAME%/${DOCKER_IMAGE}:latest"
+                        
+                        // Push both tags
+                        bat "docker push %DOCKER_USERNAME%/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        bat "docker push %DOCKER_USERNAME%/${DOCKER_IMAGE}:latest"
+                        
+                        // Logout for security
+                        bat "docker logout"
+                    }
+                    echo "Docker image push completed"
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 script {
@@ -42,14 +67,16 @@ pipeline {
                         docker ps -aq --filter "name=${DOCKER_IMAGE}" && docker rm ${DOCKER_IMAGE} || exit 0
                     """
                     
-                    // Run new container
-                    bat """
-                        docker run -d ^
-                            --name ${DOCKER_IMAGE} ^
-                            -p ${PORT}:${PORT} ^
-                            -e HF_TOKEN=${HF_TOKEN} ^
-                            ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    """
+                    // Run new container with properly escaped credentials
+                    withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
+                        bat """
+                            docker run -d ^
+                                --name ${DOCKER_IMAGE} ^
+                                -p ${PORT}:${PORT} ^
+                                -e HF_TOKEN="%HF_TOKEN%" ^
+                                ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        """
+                    }
                     echo "Deployment completed"
                 }
             }
