@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     echo "Starting Docker build..."
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                     echo "Docker build completed"
                 }
             }
@@ -37,17 +37,17 @@ pipeline {
                     echo "Starting deployment..."
                     
                     // Stop and remove existing container if running
-                    sh '''
-                        docker ps -q --filter "name=${DOCKER_IMAGE}" | grep -q . && docker stop ${DOCKER_IMAGE} || true
-                        docker ps -aq --filter "name=${DOCKER_IMAGE}" | grep -q . && docker rm ${DOCKER_IMAGE} || true
-                    '''
+                    bat """
+                        docker ps -q --filter "name=${DOCKER_IMAGE}" && docker stop ${DOCKER_IMAGE} || exit 0
+                        docker ps -aq --filter "name=${DOCKER_IMAGE}" && docker rm ${DOCKER_IMAGE} || exit 0
+                    """
                     
                     // Run new container
-                    sh """
-                        docker run -d \
-                            --name ${DOCKER_IMAGE} \
-                            -p ${PORT}:${PORT} \
-                            -e HF_TOKEN=${HF_TOKEN} \
+                    bat """
+                        docker run -d ^
+                            --name ${DOCKER_IMAGE} ^
+                            -p ${PORT}:${PORT} ^
+                            -e HF_TOKEN=${HF_TOKEN} ^
                             ${DOCKER_IMAGE}:${DOCKER_TAG}
                     """
                     echo "Deployment completed"
@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     echo "Verifying deployment..."
-                    sh 'docker ps | grep ${DOCKER_IMAGE}'
+                    bat "docker ps | findstr ${DOCKER_IMAGE}"
                     echo "Container is running on port ${PORT}"
                 }
             }
@@ -69,7 +69,7 @@ pipeline {
             steps {
                 script {
                     echo "Cleaning up old images..."
-                    sh 'docker image prune -f'
+                    bat "docker image prune -f"
                     echo "Cleanup completed"
                 }
             }
