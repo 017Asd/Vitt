@@ -1,52 +1,97 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/5 * * * *')  // Poll every 5 minutes
+    }
+
     environment {
-        DOCKER_IMAGE = 'image-classification-app'
+        DOCKER_IMAGE = 'vit-app'
         PORT = '5000'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from repository...'
+                cleanWs()
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                echo 'Would run: docker build -t ${DOCKER_IMAGE} .'
+                script {
+                    try {
+                        // Build with cache for faster builds
+                        docker.build("${DOCKER_IMAGE}:latest", "--cache-from ${DOCKER_IMAGE}:latest .")
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                        error "Build failed"
+                    }
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Stop Existing Container') {
             steps {
-                echo 'Starting deployment...'
-                echo 'Would run: docker run -d --name ${DOCKER_IMAGE} -p ${PORT}:${PORT} ${DOCKER_IMAGE}'
+                script {
+                    try {
+                        sh 'docker stop vit-container || true'
+                        sh 'docker rm vit-container || true'
+                    } catch (Exception e) {
+                        echo "Cleanup failed: ${e.message}"
+                        // Continue even if cleanup fails
+                    }
+                }
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                script {
+                    try {
+                        sh "docker run -d -p ${PORT}:${PORT} --name vit-container ${DOCKER_IMAGE}:latest"
+                    } catch (Exception e) {
+                        echo "Deployment failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                        error "Deployment failed"
+                    }
+                }
             }
         }
 
         stage('Verify') {
             steps {
-                echo 'Verifying deployment...'
-                echo 'Would check if container is running on port ${PORT}'
-            }
-        }
-
-        stage('Pipeline Name') {
-            steps {
-                echo 'Image Classification Pipeline'
+                script {
+                    try {
+                        // Wait for container to be healthy
+                        timeout(time: 1, unit: 'MINUTES') {
+                            waitUntil {
+                                def status = sh(script: 'docker inspect -f {{.State.Running}} vit-container', returnStdout: true).trim()
+                                return status == 'true'
+                            }
+                        }
+                        echo "Container is running successfully"
+                    } catch (Exception e) {
+                        echo "Verification failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                        error "Verification failed"
+                    }
+                }
             }
         }
     }
 
     post {
+        always {
+            echo "Pipeline completed with status: ${currentBuild.currentResult}"
+        }
         success {
             echo """
             =========================================
             Pipeline completed successfully!
-            Application would be running at http://localhost:${PORT}
+            Application is running at http://localhost:${PORT}
             =========================================
             """
         }
@@ -54,11 +99,9 @@ pipeline {
             echo """
             =========================================
             Pipeline failed!
-            Error details: ${currentBuild.description}
-            Build URL: ${env.BUILD_URL}
+            Check the logs for details
             =========================================
             """
         }
     }
 }
-
