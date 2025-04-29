@@ -23,7 +23,7 @@ pipeline {
                 script {
                     try {
                         // Build with cache for faster builds
-                        docker.build("${DOCKER_IMAGE}:latest", "--cache-from ${DOCKER_IMAGE}:latest .")
+                        bat "docker build -t ${DOCKER_IMAGE}:latest --cache-from ${DOCKER_IMAGE}:latest ."
                     } catch (Exception e) {
                         echo "Build failed: ${e.message}"
                         currentBuild.result = 'FAILURE'
@@ -37,8 +37,8 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'docker stop vit-container || true'
-                        sh 'docker rm vit-container || true'
+                        bat 'docker stop vit-container || exit 0'
+                        bat 'docker rm vit-container || exit 0'
                     } catch (Exception e) {
                         echo "Cleanup failed: ${e.message}"
                         // Continue even if cleanup fails
@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh "docker run -d -p ${PORT}:${PORT} --name vit-container ${DOCKER_IMAGE}:latest"
+                        bat "docker run -d -p ${PORT}:${PORT} --name vit-container ${DOCKER_IMAGE}:latest"
                     } catch (Exception e) {
                         echo "Deployment failed: ${e.message}"
                         currentBuild.result = 'FAILURE'
@@ -68,7 +68,7 @@ pipeline {
                         // Wait for container to be healthy
                         timeout(time: 1, unit: 'MINUTES') {
                             waitUntil {
-                                def status = sh(script: 'docker inspect -f {{.State.Running}} vit-container', returnStdout: true).trim()
+                                def status = bat(script: 'docker inspect -f {{.State.Running}} vit-container', returnStdout: true).trim()
                                 return status == 'true'
                             }
                         }
