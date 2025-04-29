@@ -117,3 +117,6 @@ vit/
 │   └── model/                # Fine-tuned ViT model weights
 ├── Jenkinsfile (optional)
 └── README.md
+
+## CI/CD Test
+This line was added to test the CI/CD pipeline. If you see this, the pipeline is working correctly!
