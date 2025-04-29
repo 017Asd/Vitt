@@ -1,0 +1,155 @@
+/* style.css */
+
+/* 1. Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+/* 2. Background gradient behind the container */
+body {
+  background: linear-gradient(135deg,
+    #ff9a9e 0%,
+    #fad0c4 50%,
+    #fad0c4 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 3. Frosted‐glass container */
+.container {
+  position: relative;
+  width: calc(100% - 120px);
+  /* max-width: 1200px; */
+  height: 90vh;
+  display: flex;
+  border-radius: 16px;
+  overflow: hidden;
+
+  /* Frosted glass effect */
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin-inline: 60px;
+}
+
+/* 4. Panel base (semi-transparent) */
+.upload-section,
+.result-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+  text-align: center;
+  color: #2c3e50;
+  /* a little extra frost so text pops */
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 4a. Left panel divider */
+.upload-section {
+  flex: 1;
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.upload-section h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+/* 4b. Right panel */
+.result-section {
+  flex: 1.5;
+}
+
+.result-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* 5. Form controls */
+.upload-section form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.upload-section input[type="file"] {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.upload-section input[type="file"]:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.upload-section button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%);
+  transition: opacity 0.3s;
+}
+
+.upload-section button:hover {
+  opacity: 0.85;
+}
+
+/* 6. Image preview */
+.result-section .preview-img {
+  max-width: 100%;
+  max-height: 70%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* 7. Responsive behavior */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+  .container {
+    flex-direction: column;
+    width: 100%;
+    /* height: auto; */
+    margin: 0;
+    backdrop-filter: blur(8px);
+    height: 100vh;
+    border-radius: 0;
+  }
+  .upload-section,
+  .result-section {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 30px 20px;
+  }
+  .result-section {
+    border-bottom: none;
+  }
+}

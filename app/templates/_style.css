@@ -1,0 +1,130 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  height: 100vh;
+  background-color: #f4f6f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  width: 90%;
+  max-width: 1000px;
+  height: 80%;
+  overflow: hidden;
+}
+
+/* LEFT PANEL (upload) tweaks */
+.upload-section {
+  flex: 1;
+  padding: 60px 40px; /* more padding top/bottom and sides */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* center everything horizontally */
+  border-right: 1px solid #e0e0e0;
+  text-align: center; /* center the heading */
+}
+
+.upload-section h1 {
+  font-size: 30px;
+  color: #333;
+  margin-bottom: 30px; /* bigger gap under title */
+}
+
+form {
+  width: 100%;
+  max-width: 300px; /* limit form width */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* more vertical space between controls */
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+input[type="file"]:hover {
+  border-color: #888;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* RIGHT PANEL (result) */
+.result-section {
+  flex: 1.5;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.result-section h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.preview-img {
+  max-width: 100%;
+  max-height: 70%;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .upload-section,
+  .result-section {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px;
+  }
+
+  .result-section {
+    height: auto;
+  }
+}
