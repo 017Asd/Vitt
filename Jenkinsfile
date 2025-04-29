@@ -3,55 +3,22 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'image-classification-app'
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
-        HF_TOKEN = credentials('hf-token')
         PORT = '5000'
-        DOCKER_REGISTRY = credentials('docker-hub-credentials')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Clean workspace before build
                 cleanWs()
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/master']],
-                    userRemoteConfigs: [[url: 'https://github.com/017Asd/Vit.git']]
-                ])
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo "Starting Docker build..."
-                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                    echo "Docker build completed"
-                }
-            }
-        }
-
-        stage('Push to Registry') {
-            steps {
-                script {
-                    echo "Pushing Docker image to registry..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        // Login to Docker Hub
-                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-                        
-                        // Tag the image for Docker Hub
-                        bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} %DOCKER_USERNAME%/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                        bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} %DOCKER_USERNAME%/${DOCKER_IMAGE}:latest"
-                        
-                        // Push both tags
-                        bat "docker push %DOCKER_USERNAME%/${DOCKER_IMAGE}:${DOCKER_TAG}"
-                        bat "docker push %DOCKER_USERNAME%/${DOCKER_IMAGE}:latest"
-                        
-                        // Logout for security
-                        bat "docker logout"
-                    }
-                    echo "Docker image push completed"
+                    echo "Building Docker image..."
+                    bat "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
         }
@@ -67,17 +34,13 @@ pipeline {
                         docker ps -aq --filter "name=${DOCKER_IMAGE}" && docker rm ${DOCKER_IMAGE} || exit 0
                     """
                     
-                    // Run new container with properly escaped credentials
-                    withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
-                        bat """
-                            docker run -d ^
-                                --name ${DOCKER_IMAGE} ^
-                                -p ${PORT}:${PORT} ^
-                                -e HF_TOKEN="%HF_TOKEN%" ^
-                                ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        """
-                    }
-                    echo "Deployment completed"
+                    // Run new container
+                    bat """
+                        docker run -d ^
+                            --name ${DOCKER_IMAGE} ^
+                            -p ${PORT}:${PORT} ^
+                            ${DOCKER_IMAGE}
+                    """
                 }
             }
         }
@@ -91,16 +54,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Cleanup') {
-            steps {
-                script {
-                    echo "Cleaning up old images..."
-                    bat "docker image prune -f"
-                    echo "Cleanup completed"
-                }
-            }
-        }
     }
 
     post {
@@ -109,7 +62,6 @@ pipeline {
             =========================================
             Pipeline completed successfully!
             Application is running at http://localhost:${PORT}
-            Container: ${DOCKER_IMAGE}:${DOCKER_TAG}
             =========================================
             """
         }
