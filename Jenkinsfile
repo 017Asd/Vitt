@@ -54,6 +54,12 @@ pipeline {
                 }
             }
         }
+
+        stage('Pipeline Name') {
+            steps {
+                echo 'Image Classification Pipeline'
+            }
+        }
     }
 
     post {
