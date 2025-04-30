@@ -39,6 +39,9 @@ FROM development as production
 ENV FLASK_ENV=production
 ENV FLASK_DEBUG=0
 
+# Install gunicorn for production
+RUN pip install gunicorn
+
 # Remove development dependencies if any
 RUN pip uninstall -y debugpy
 
