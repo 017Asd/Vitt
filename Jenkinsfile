@@ -38,8 +38,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        bat 'docker stop vit-container || exit 0'
-                        bat 'docker rm vit-container || exit 0'
+                        // Force stop and remove the container
+                        bat 'docker stop vit-container || true'
+                        bat 'docker rm -f vit-container || true'
                     } catch (Exception e) {
                         echo "Cleanup failed: ${e.message}"
                         // Continue even if cleanup fails
