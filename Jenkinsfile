@@ -68,14 +68,28 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Simple check if container exists and is running
+                        // Wait for container to start
+                        sleep 10
+                        
+                        // Check if container exists and is running
                         def containerId = bat(script: 'docker ps -q -f name=vit-container', returnStdout: true).trim()
                         if (containerId) {
                             echo "Container is running with ID: ${containerId}"
+                            
+                            // Check container logs for any startup issues
+                            def logs = bat(script: 'docker logs vit-container', returnStdout: true).trim()
+                            echo "Container logs: ${logs}"
+                            
                             // Check if port is bound
                             def portCheck = bat(script: 'docker port vit-container 5000', returnStdout: true).trim()
-                            echo "Port mapping: ${portCheck}"
-                            currentBuild.result = 'SUCCESS'
+                            if (portCheck) {
+                                echo "Port mapping: ${portCheck}"
+                                currentBuild.result = 'SUCCESS'
+                            } else {
+                                echo "Port 5000 is not bound"
+                                currentBuild.result = 'FAILURE'
+                                error "Port verification failed"
+                            }
                         } else {
                             echo "Container is not running"
                             currentBuild.result = 'FAILURE'
