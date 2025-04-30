@@ -28,6 +28,7 @@ RUN mkdir -p app/static/uploads && \
 # Development specific settings
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
+ENV PYTHONPATH=/app
 
 # Command for development
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
@@ -38,6 +39,7 @@ FROM development as production
 # Production specific settings
 ENV FLASK_ENV=production
 ENV FLASK_DEBUG=0
+ENV PYTHONPATH=/app
 
 # Install gunicorn for production
 RUN pip install gunicorn
