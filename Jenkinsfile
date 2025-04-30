@@ -53,13 +53,7 @@ pipeline {
                 script {
                     try {
                         withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
-                            bat """
-                                docker run -d ^
-                                    -p ${PORT}:${PORT} ^
-                                    --name vit-container ^
-                                    -e HF_TOKEN=%HF_TOKEN% ^
-                                    ${DOCKER_IMAGE}:latest
-                            """
+                            bat "docker run -d -p ${PORT}:${PORT} --name vit-container -e HF_TOKEN=%HF_TOKEN% ${DOCKER_IMAGE}:latest"
                         }
                     } catch (Exception e) {
                         echo "Deployment failed: ${e.message}"
