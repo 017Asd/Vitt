@@ -1,16 +1,14 @@
-# Build stage
-FROM python:3.9-slim as builder
+# Development stage
+FROM python:3.9-slim as development
 
-# Install build dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libffi-dev \
-    libssl-dev \
-    libjpeg-dev \
-    zlib1g-dev \
+    libjpeg62-turbo \
+    zlib1g \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
 # Copy requirements first to leverage Docker cache
@@ -20,39 +18,32 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Final stage
-FROM python:3.9-slim
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libjpeg62-turbo \
-    zlib1g \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
 # Copy application code
-COPY app/ app/
-COPY requirements.txt .
+COPY . .
 
-# Create uploads directory and set permissions
+# Create uploads directory
 RUN mkdir -p app/static/uploads && \
     chmod -R 755 app/static/uploads
 
-# Set environment variables
-ENV FLASK_APP=app/app.py
+# Development specific settings
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+
+# Command for development
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+
+# Production stage
+FROM development as production
+
+# Production specific settings
 ENV FLASK_ENV=production
-ENV PYTHONUNBUFFERED=1
-# Add a default HF_TOKEN (you should override this when running the container)
-ENV HF_TOKEN=""
+ENV FLASK_DEBUG=0
 
-# Expose port
-EXPOSE 5000
+# Remove development dependencies if any
+RUN pip uninstall -y debugpy
 
-# Run the application
-CMD ["python", "app/app.py"]
+# Add .env file to the container
+COPY .env /app/.env
+
+# Command for production
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

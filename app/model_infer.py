@@ -6,12 +6,15 @@ from PIL import Image # type: ignore
 import torch # type: ignore
 
 import os 
-your_token =os.environ["HF_TOKEN"]
+your_token = os.environ.get("HF_TOKEN")
+if not your_token:
+    raise ValueError("HF_TOKEN environment variable is not set")
+
 model_name = 'google/vit-base-patch16-224'
 
 # Load model and extractor once (not every time user uploads)
-feature_extractor = ViTFeatureExtractor.from_pretrained(model_name, use_auth_token=your_token)
-model = ViTForImageClassification.from_pretrained(model_name, use_auth_token=your_token)
+feature_extractor = ViTFeatureExtractor.from_pretrained(model_name, token=your_token)
+model = ViTForImageClassification.from_pretrained(model_name, token=your_token)
 model.eval()
 
 def predict(image_path):
