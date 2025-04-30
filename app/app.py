@@ -1,6 +1,6 @@
 import logging
 from flask import Flask, request, render_template
-from model_infer import predict
+from app.model_infer import predict
 import os
 
 # Set up basic logging

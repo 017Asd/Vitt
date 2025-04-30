@@ -48,4 +48,4 @@ RUN pip install gunicorn
 RUN pip uninstall -y debugpy
 
 # Command for production
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app.app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--pythonpath", "/app", "app.app:app"]
