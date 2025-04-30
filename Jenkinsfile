@@ -8,6 +8,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'vit-app'
         PORT = '5000'
+        HF_TOKEN = credentials('hf-token')
     }
 
     stages {
@@ -51,7 +52,15 @@ pipeline {
             steps {
                 script {
                     try {
-                        bat "docker run -d -p ${PORT}:${PORT} --name vit-container ${DOCKER_IMAGE}:latest"
+                        withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
+                            bat """
+                                docker run -d ^
+                                    -p ${PORT}:${PORT} ^
+                                    --name vit-container ^
+                                    -e HF_TOKEN=%HF_TOKEN% ^
+                                    ${DOCKER_IMAGE}:latest
+                            """
+                        }
                     } catch (Exception e) {
                         echo "Deployment failed: ${e.message}"
                         currentBuild.result = 'FAILURE'
