@@ -55,7 +55,7 @@ pipeline {
                     try {
                         withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
                             // Create a temporary file for the token
-                            writeFile file: 'hf_token.txt', text: HF_TOKEN
+                            writeFile file: 'hf_token.txt', text: "HF_TOKEN=${HF_TOKEN}"
                             // Run container with token file
                             bat "docker run -d -p ${PORT}:${PORT} --name vit-container --env-file hf_token.txt ${DOCKER_IMAGE}:latest"
                             // Clean up the token file
