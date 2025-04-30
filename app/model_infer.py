@@ -16,6 +16,10 @@ your_token = os.environ.get("HF_TOKEN")
 if not your_token:
     raise ValueError("HF_TOKEN environment variable is not set. Please set it in your .env file or as an environment variable.")
 
+# Ensure token is properly formatted
+if not your_token.startswith('hf_'):
+    your_token = f'hf_{your_token}'
+
 model_name = 'google/vit-base-patch16-224'
 
 # Load model and extractor once (not every time user uploads)
