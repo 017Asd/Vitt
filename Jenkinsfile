@@ -53,7 +53,10 @@ pipeline {
                 script {
                     try {
                         withCredentials([string(credentialsId: 'hf-token', variable: 'HF_TOKEN')]) {
-                            bat "docker run -d -p ${PORT}:${PORT} --name vit-container -e HF_TOKEN=%HF_TOKEN% ${DOCKER_IMAGE}:latest"
+                            // Create .env file
+                            writeFile file: '.env', text: "HF_TOKEN=${HF_TOKEN}"
+                            // Run container with environment file
+                            bat "docker run -d -p ${PORT}:${PORT} --name vit-container --env-file .env ${DOCKER_IMAGE}:latest"
                         }
                     } catch (Exception e) {
                         echo "Deployment failed: ${e.message}"
