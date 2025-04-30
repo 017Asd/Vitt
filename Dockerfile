@@ -42,8 +42,5 @@ ENV FLASK_DEBUG=0
 # Remove development dependencies if any
 RUN pip uninstall -y debugpy
 
-# Add .env file to the container
-COPY .env /app/.env
-
 # Command for production
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
