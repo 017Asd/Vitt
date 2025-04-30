@@ -1,14 +1,20 @@
 # app/model_infer.py
-from dotenv import load_dotenv
-load_dotenv()
 from transformers import ViTFeatureExtractor, ViTForImageClassification
 from PIL import Image # type: ignore
 import torch # type: ignore
-
 import os 
+
+# Try to load from .env file first (for local development)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not available, continue with environment variables
+
+# Get token from environment (either from .env or system environment)
 your_token = os.environ.get("HF_TOKEN")
 if not your_token:
-    raise ValueError("HF_TOKEN environment variable is not set")
+    raise ValueError("HF_TOKEN environment variable is not set. Please set it in your .env file or as an environment variable.")
 
 model_name = 'google/vit-base-patch16-224'
 
