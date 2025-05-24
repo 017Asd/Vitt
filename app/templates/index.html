@@ -1,84 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Image Classifier</title>
-    <style>
-        body {
-            background: #0f2027;  /* fallback for old browsers */
-            background: linear-gradient(to right, #2c5364, #203a43, #0f2027); 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            font-size: 2.5rem;
-            color: #00d2ff;
-        }
-
-        form {
-            background-color: #1c1c1c;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        input[type="file"] {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #2a2a2a;
-            color: white;
-            border: none;
-        }
-
-        button {
-            background-color: #00d2ff;
-            color: white;
-            padding: 10px 20px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #007acc;
-        }
-
-        h2 {
-            margin-top: 20px;
-            font-size: 1.8rem;
-            color: #a0e9ff;
-        }
-
-        img {
-            margin-top: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Bird Species Classifier</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Upload Image</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <br>
-        <button type="submit">Predict</button>
-    </form>
+  <div class="container">
+    <div class="upload-section">
+      <h1>Bird Species Classifier</h1>
+      <p class="subtitle">Upload a bird image to identify its species</p>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Identify Bird</button>
+      </form>
+    </div>
 
-    {% if prediction %}
-        <h2>Prediction: {{ prediction }}</h2>
-        <img src="{{ image_path }}" width="300">
-    {% endif %}
+    <div class="result-section">
+      {% if prediction %}
+        <h2>Prediction Results</h2>
+        <div class="prediction-box">
+          <p class="species">Species: <strong>{{ prediction }}</strong></p>
+          <p class="confidence">Confidence: <strong>{{ confidence }}</strong></p>
+        </div>
+        <img src="{{ image_url }}" class="preview-img" alt="Uploaded bird image">
+      {% else %}
+        <h2>No prediction yet</h2>
+        <p>Upload a bird image to get started</p>
+      {% endif %}
+    </div>
+  </div>
 </body>
 </html>

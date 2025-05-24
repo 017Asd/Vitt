@@ -1,17 +1,16 @@
-# Use an official Python base image
 FROM python:3.9-slim
 
-# Set working directory
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libffi-dev libssl-dev libjpeg-dev zlib1g-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy files into the container
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
+RUN pip install --default-timeout=1000 --retries=10 --no-cache-dir --trusted-host pypi.org --trusted-host pypi.pythonhosted.org --trusted-host files.pythonhosted.org -r requirements.txt
+
 COPY . .
 
-# Install dependencies
-RUN pip install -r requirements.txt
-
-# Expose port 5000
 EXPOSE 5000
 
-# Run the app
 CMD ["python", "app/app.py"]
